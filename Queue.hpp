@@ -1,8 +1,6 @@
 #ifndef QUEUE_IMPL_H
 #define QUEUE_IMPL_H
 
-#include "Queue.h"
-
 namespace stl {
     template <typename T>
     Queue<T>::Queue() noexcept = default;

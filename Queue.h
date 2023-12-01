@@ -80,5 +80,5 @@ namespace stl {
 } // namespace stl
 
 // FIXME: Uncomment
-// #include "Queue.hpp"
+#include "Queue.hpp"
 #endif // QUEUE_H
