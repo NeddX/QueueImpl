@@ -34,9 +34,11 @@ namespace stl {
         usize m_IndexPointer = 0;
 
     public:
-        Queue();
-        Queue(const std::initializer_list<T> list);
-        ~Queue();
+        Queue() noexcept;
+        Queue(const std::initializer_list<T> list) noexcept;
+        Queue(const Queue<T>& other) noexcept;
+        Queue(Queue<T>&& other) noexcept;
+        ~Queue() noexcept;
 
     public:
         constexpr usize Size() const noexcept { return m_Size - m_IndexPointer; }
@@ -51,6 +53,12 @@ namespace stl {
         T    Pop();
         T&   Front();
         T&   Back();
+        void Swap(Queue<T>& other) noexcept;
+
+    public:
+        inline Queue<T>& operator=(const Queue<T>& other);
+        inline Queue<T>& operator=(Queue<T>&& other) noexcept;
+        inline Queue<T>& operator=(const std::initializer_list<T> other) noexcept;
 
     public:
         friend std::ostream& operator<<(std::ostream& stream, const Queue<T>& other) noexcept

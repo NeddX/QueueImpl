@@ -5,15 +5,47 @@
 
 namespace stl {
     template <typename T>
-    Queue<T>::Queue() = default;
+    Queue<T>::Queue() noexcept = default;
 
     template <typename T>
-    Queue<T>::Queue(const std::initializer_list<T> list)
+    Queue<T>::Queue(const std::initializer_list<T> list) noexcept
     {
+        Realloc(list.size());
+        std::copy(list.begin(), list.end(), m_Buffer);
     }
 
     template <typename T>
-    Queue<T>::~Queue()
+    Queue<T>::Queue(const Queue<T>& other) noexcept
+    {
+        if (other.m_Buffer)
+        {
+            m_Size         = other.m_Size;
+            m_Capacity     = other.m_Capacity;
+            m_IndexPointer = other.m_IndexPointer;
+            m_Buffer       = new T[m_Capacity];
+            std::memcpy(m_Buffer, other.m_Buffer, m_Size * sizeof(T));
+        }
+    }
+
+    template <typename T>
+    Queue<T>::Queue(Queue<T>&& other) noexcept
+    {
+        if (other.m_Buffer)
+        {
+            m_Buffer       = other.m_Buffer;
+            m_Size         = other.m_Size;
+            m_Capacity     = other.m_Capacity;
+            m_IndexPointer = other.m_IndexPointer;
+
+            other.m_Buffer       = nullptr;
+            other.m_Size         = 0;
+            other.m_Capacity     = 0;
+            other.m_IndexPointer = 0;
+        }
+    }
+
+    template <typename T>
+    Queue<T>::~Queue() noexcept
     {
         Drop();
     }
@@ -35,7 +67,7 @@ namespace stl {
             }
             else
             {
-                // TODO: Consider shrinkage?
+                // TODO: Consider shrinkage perhaps?
                 const auto* temp      = m_Buffer;
                 const auto  prev_size = m_Size;
 
@@ -79,7 +111,6 @@ namespace stl {
     template <typename T>
     T Queue<T>::Pop()
     {
-        // TODO: Add bounds checking
         if (Size() <= 0)
             throw std::out_of_range("Tried calling Pop() on an empty Queue.");
         return std::move(m_Buffer[m_IndexPointer++]);
@@ -99,6 +130,56 @@ namespace stl {
         if (Size() <= 0)
             throw std::out_of_range("Tried calling Front() on an empty Queue.");
         return m_Buffer[m_Size - 1];
+    }
+
+    template <typename T>
+    void Queue<T>::Swap(Queue<T>& other) noexcept
+    {
+        std::swap(m_Buffer, other.m_Buffer);
+        std::swap(m_Size, other.m_Size);
+        std::swap(m_Capacity, other.m_Capacity);
+        std::swap(m_IndexPointer, other.m_IndexPointer);
+    }
+
+    template <typename T>
+    inline Queue<T>& Queue<T>::operator=(const Queue<T>& other)
+    {
+        if (&other == this)
+            return *this;
+
+        if (other.m_Buffer)
+        {
+            if (m_Buffer)
+                Drop();
+
+            m_Size         = other.m_Size;
+            m_Capacity     = other.m_Capacity;
+            m_IndexPointer = other.m_IndexPointer;
+            m_Buffer       = new T[m_Capacity];
+            std::memcpy(m_Buffer, other.m_Buffer, m_Size * sizeof(T));
+        }
+        return *this;
+    }
+
+    template <typename T>
+    inline Queue<T>& Queue<T>::operator=(Queue<T>&& other) noexcept
+    {
+        if (&other == this)
+            return *this;
+
+        if (other.m_Buffer)
+        {
+            m_Buffer       = other.m_Buffer;
+            m_Size         = other.m_Size;
+            m_Capacity     = other.m_Capacity;
+            m_IndexPointer = other.m_IndexPointer;
+
+            other.m_Buffer       = nullptr;
+            other.m_Size         = 0;
+            other.m_Capacity     = 0;
+            other.m_IndexPointer = 0;
+        }
+        return *this;
     }
 } // namespace stl
 

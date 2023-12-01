@@ -2,7 +2,7 @@
 
 int main()
 {
-    stl::Queue<int> f;
+    stl::Queue<int> f{ 5, 10, 2, 2 };
     const usize     size = 8;
     for (usize i = 0; i < size / 2; ++i)
         f.Push(std::rand() % 256);
@@ -31,6 +31,9 @@ int main()
         }
     }
 
-    std::cout << f.Empty() << std::endl;
+    if (!f.Empty())
+    {
+        std::cout << "First: " << f.Front() << "\nBack: " << f.Back() << std::endl;
+    }
     return 0;
 }
